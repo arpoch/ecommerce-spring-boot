@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  eureka:
+    container_name: eureka_service
+    build:
+      context: .
+      dockerfile: eurekadocker
+    ports:
+      - 8761:8761
+  
+  sqldb:
+    image:  mcr.microsoft.com/mssql/server:2019-latest
+    user: root 
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=yourStrong(!)Password
+    expose:
+      - 1400
+    ports:
+      - 1400:1433
+    volumes:
+      - mssql-vol:/var/opt/mssql/data/  
+
+  catalog:
+    container_name: catalog_service
+    build:
+      context: .
+      dockerfile: catalogdocker
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqldb:1400;encrypt=false;databaseName=ecommerce
+    depends_on:
+      - eureka
+      - sqldb
+  #     #   :
+  #     #   condition: service_completed_successfully
+  #     # db:
+  #     #   condition: service_completed_successfully
+    ports:
+      - 8085:8085
+
+  cart:
+    container_name: cart_service
+    build:
+      context: .
+      dockerfile: cartdocker
+    depends_on:
+      - eureka
+      # - db
+    ports:
+      - 8080:8080
+
+volumes:
+  mssql-vol:
+    driver: local
