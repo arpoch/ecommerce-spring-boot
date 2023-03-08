@@ -1,0 +1,9 @@
+FROM openjdk:11-oraclelinux8
+
+WORKDIR $HOME/
+
+COPY cart.jar .
+
+EXPOSE 8080/tcp
+
+ENTRYPOINT ["java ","-jar","cart.jar"]
