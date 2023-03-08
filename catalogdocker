@@ -1,0 +1,9 @@
+FROM openjdk:11-oraclelinux8
+
+WORKDIR $HOME/
+
+COPY catalog.jar .
+
+EXPOSE 8085/tcp
+
+ENTRYPOINT ["java","-jar","catalog.jar"]
